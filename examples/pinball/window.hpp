@@ -13,10 +13,12 @@ public:
 
   // Making Flipper public
   struct Flipper {
-    glm::vec2 position{};
-    float angle{};
-    float length{};
-  };
+  glm::vec2 position{};
+  float currentAngle{};
+  float targetAngle{};
+  float angularVelocity{};
+  float length{};
+};
 
   struct Obstacle {
     glm::vec2 position;
