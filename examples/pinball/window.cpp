@@ -10,7 +10,8 @@ constexpr float WALL_TOP = 1.0f;
 
 void Window::onCreate() {
   // Vertex and Fragment shaders to handle transformations and color
-  auto const *vertexShader = R"gl(
+  auto const *vertexShader =
+      R"gl(
     #version 300 es
     layout(location = 0) in vec2 inPosition;
     uniform vec2 translate;
@@ -29,7 +30,8 @@ void Window::onCreate() {
     }
   )gl";
 
-  auto const *fragmentShader = R"gl(
+  auto const *fragmentShader =
+      R"gl(
     #version 300 es
     precision mediump float;
     uniform vec4 color;
@@ -138,7 +140,7 @@ void Window::checkCollisionWithObstacles() {
     float distance = glm::length(m_ball.position - obstacle.position);
 
     // Check if the ball's radius overlaps with the obstacle's radius
-    if (distance < (scaledBallRadius + obstacle.radius/2)) {
+    if (distance < (scaledBallRadius + obstacle.radius / 2.5)) {
       // Simple bounce logic: Reflect the ball's velocity
       glm::vec2 normal = glm::normalize(m_ball.position - obstacle.position);
       m_ball.velocity = glm::reflect(m_ball.velocity, normal);
@@ -173,24 +175,19 @@ void Window::setupFlippers() {
 void Window::renderFlipper(Flipper const &flipper, bool isLeft) {
   glBindVertexArray(m_VAO);
 
-
-  const float flipperHalfHeight = 0.025f;
+  const float flipperHalfHeight = -0.1f;
 
   std::array<glm::vec2, 4> positions;
   if (isLeft) {
-    positions = {
-      glm::vec2{0.0f, -flipperHalfHeight},
-      glm::vec2{flipper.length/m_gameScale, -flipperHalfHeight},
-      glm::vec2{flipper.length/m_gameScale, flipperHalfHeight},
-      glm::vec2{0.0f, flipperHalfHeight}
-    };
+    positions = {glm::vec2{0.0f, -flipperHalfHeight},
+                 glm::vec2{flipper.length / m_gameScale, -flipperHalfHeight},
+                 glm::vec2{flipper.length / m_gameScale, flipperHalfHeight},
+                 glm::vec2{0.0f, flipperHalfHeight}};
   } else {
-    positions = {
-      glm::vec2{0.0f, -flipperHalfHeight},
-      glm::vec2{-flipper.length/m_gameScale, -flipperHalfHeight},
-      glm::vec2{-flipper.length/m_gameScale, flipperHalfHeight},
-      glm::vec2{0.0f, flipperHalfHeight}
-    };
+    positions = {glm::vec2{0.0f, -flipperHalfHeight},
+                 glm::vec2{-flipper.length / m_gameScale, -flipperHalfHeight},
+                 glm::vec2{-flipper.length / m_gameScale, flipperHalfHeight},
+                 glm::vec2{0.0f, flipperHalfHeight}};
   }
 
   glUniform4f(m_colorLoc, 1.0f, 1.0f, 1.0f, 1.0f);
@@ -222,10 +219,12 @@ void Window::onUpdate() {
   auto const deltaTime{getDeltaTime()};
 
   // Evitar divisão por zero
-  if (deltaTime <= std::numeric_limits<float>::epsilon()) return;
+  if (deltaTime <= std::numeric_limits<float>::epsilon())
+    return;
 
   // Atualiza ângulos dos flippers
-  float maxAngularSpeed = 5.0f; // Velocidade angular máxima (radianos por segundo)
+  float maxAngularSpeed =
+      5.0f; // Velocidade angular máxima (radianos por segundo)
   float maxAngularVelocity = 5.0f; // Velocidade angular máxima permitida
 
   auto updateFlipperAngle = [&](Flipper &flipper) {
@@ -243,7 +242,8 @@ void Window::onUpdate() {
 
     // Calcula a velocidade angular
     if (deltaTime > std::numeric_limits<float>::epsilon()) {
-      flipper.angularVelocity = (flipper.currentAngle - previousAngle) / deltaTime;
+      flipper.angularVelocity =
+          (flipper.currentAngle - previousAngle) / deltaTime;
 
       // Limita a velocidade angular máxima
       if (flipper.angularVelocity > maxAngularVelocity)
@@ -261,7 +261,8 @@ void Window::onUpdate() {
   m_ball.velocity.y -= 0.8f * deltaTime; // Gravidade
 
   // Verifica se a velocidade da bola é válida
-  if (glm::any(glm::isnan(m_ball.velocity)) || glm::any(glm::isinf(m_ball.velocity))) {
+  if (glm::any(glm::isnan(m_ball.velocity)) ||
+      glm::any(glm::isinf(m_ball.velocity))) {
     m_ball.velocity = glm::vec2(0.0f);
   }
 
@@ -293,7 +294,8 @@ void Window::onEvent(SDL_Event const &event) {
 void Window::checkCollisions() {
   const float flipperHalfHeight = 0.025f;
   // Define the lambda for ball-flipper collision detection
-    auto checkBallFlipperCollision = [&](Ball &ball, Flipper const &flipper, bool isLeft) {
+  auto checkBallFlipperCollision = [&](Ball &ball, Flipper const &flipper,
+                                       bool isLeft) {
     glm::vec2 relPos = ball.position - flipper.position;
 
     float angle = isLeft ? flipper.currentAngle : -flipper.currentAngle;
@@ -303,14 +305,16 @@ void Window::checkCollisions() {
     float xMax = isLeft ? flipper.length : 0.0f;
 
     if (rotatedPos.x >= xMin && rotatedPos.x <= xMax &&
-        rotatedPos.y >= -flipperHalfHeight && rotatedPos.y <= flipperHalfHeight) {
-      
+        rotatedPos.y >= -flipperHalfHeight &&
+        rotatedPos.y <= flipperHalfHeight) {
+
       // Calcula o vetor normal
       glm::vec2 normal = glm::rotate(glm::vec2(0.0f, 1.0f), angle);
 
       // Calcula a velocidade do flipper no ponto de contato
       // Evitar valores extremos ou inválidos
-      glm::vec2 flipperVelocity = flipper.angularVelocity * glm::vec2(-relPos.y, relPos.x);
+      glm::vec2 flipperVelocity =
+          flipper.angularVelocity * glm::vec2(-relPos.y, relPos.x);
 
       // Limitar a magnitude da velocidade do flipper
       float maxFlipperSpeed = 2.0f; // Ajuste conforme necessário
@@ -320,10 +324,12 @@ void Window::checkCollisions() {
 
       // Ajusta a velocidade da bola
       glm::vec2 relativeVelocity = ball.velocity - flipperVelocity;
-      glm::vec2 newVelocity = glm::reflect(relativeVelocity, normal) + flipperVelocity;
+      glm::vec2 newVelocity =
+          glm::reflect(relativeVelocity, normal) + flipperVelocity;
 
       // Verifica se a nova velocidade é válida
-      if (glm::any(glm::isnan(newVelocity)) || glm::any(glm::isinf(newVelocity))) {
+      if (glm::any(glm::isnan(newVelocity)) ||
+          glm::any(glm::isinf(newVelocity))) {
         newVelocity = glm::vec2(0.0f);
       }
 
