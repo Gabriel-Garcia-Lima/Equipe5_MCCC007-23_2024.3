@@ -1,113 +1,67 @@
-# ABCg
+# Projeto Pinball - Equipe 5
 
-![build workflow](https://github.com/hbatagelo/abcg/actions/workflows/build.yml/badge.svg)
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/hbatagelo/abcg)](https://github.com/hbatagelo/abcg/releases/latest)
+## Tempo de Reação com Pinball
 
-Development framework accompanying the course [MCTA008-17 Computer Graphics](http://professor.ufabc.edu.br/~harlen.batagelo/cg/) at [UFABC](https://www.ufabc.edu.br/).
+Este projeto visa desenvolver um jogo 2D inspirado no Pinball, com o objetivo de avaliar o tempo de reação de indivíduos com dificuldades motoras em tratamento. Através deste jogo, será possível monitorar a evolução e a melhora dos participantes ao longo do tempo. O uso de jogos como ferramenta de reabilitação representa uma abordagem interessante para o acompanhamento do progresso terapêutico.
 
-[Documentation](https://hbatagelo.github.io/abcg/abcg/doc/html/) | [Release notes](CHANGELOG.md)
+### Integrantes
 
-ABCg is a lightweight C++ framework that simplifies the development of 3D graphics applications based on [OpenGL](https://www.opengl.org), [OpenGL ES](https://www.khronos.org), [WebGL](https://www.khronos.org/webgl/), and [Vulkan](https://www.vulkan.org). It is designed for the tutorials and assignments of the course "MCTA008-17 Computer Graphics" taught at Federal University of ABC (UFABC).
+- Gabriel Garcia de Lima - 11201932522
+- Fernando Hiroaki Suzuki - 11202130281
+- Leonardo Fabiano de Sousa - 11201721317
 
-***
+Este é um jogo (Pinball) interativo 2D inspirado em pinball, onde a bola pode colidir com paredes, obstáculos e flippers. O objetivo principal é manipular a bola através de controles para evitar que ela saia da tela, enquanto interage com obstáculos no caminho.
 
-## Main features
+## Como Funciona
 
-*   Supported platforms: Linux, macOS, Windows, WebAssembly.
-*   Supported backends: OpenGL 3.3+, OpenGL ES 3.0+, WebGL 2.0 (via Emscripten), Vulkan 1.3.
-*   Applications that use the common subset of functions between OpenGL 3.3 and OpenGL ES 3.0 can be built for WebGL 2.0 using the same source code.
-*   OpenGL functions can be qualified with the `abcg::` namespace to enable throwing exceptions with descriptive GL error messages that include the source code location.
-*   Includes helper classes and functions for loading textures (using [SDL\_image](https://www.libsdl.org/projects/SDL_image/)), loading OBJ 3D models (using [tinyobjloader](https://github.com/tinyobjloader/tinyobjloader)), and compiling GLSL shaders to SPIR-V with [glslang](https://github.com/KhronosGroup/glslang).
+- O jogo consiste em uma área de jogo delimitada por paredes (superior, inferior, esquerda e direita), e o jogador controla dois flippers que podem ser movidos para desviar ou impulsionar a bola.
+- A bola começa com uma velocidade inicial e pode colidir com paredes e obstáculos no jogo. Quando a bola colide com um obstáculo, ela pode mudar sua direção com base no ângulo da colisão.
+- Além disso, existem obstáculos adicionais gerados aleatoriamente em posições dentro da área de jogo.
 
-***
+## Funcionalidades
 
-## Requirements
+- **Flippers**: O jogador pode controlar os flippers com as teclas de seta esquerda e direita.
+- **Obstáculos**: Obstáculos circulares são gerados aleatoriamente na parte superior da tela.
+- **Controle da Bola**: A bola se move e interage fisicamente com os flippers, paredes e obstáculos.
 
-The following minimum requirements are shared among all platforms:
+## Controles
 
-*   [CMake](https://cmake.org/) 3.21.
-*   A C++ compiler with at least partial support for C++20 (tested with GCC 12, Clang 16, MSVC 17, and emcc 3.1.42).
-*   A system with support for OpenGL 3.3 (OpenGL backend) or Vulkan 1.3 (Vulkan backend). Conformant software rasterizers such as Mesa's [Gallium llvmpipe](https://docs.mesa3d.org/drivers/llvmpipe.html) and lavapipe (post Jun 2022) are supported. Mesa's [D3D12](https://devblogs.microsoft.com/directx/directx-heart-linux/) backend on [WSL 2.0](https://docs.microsoft.com/en-us/windows/wsl/install) is supported as well.
+- **Espaço**: Iniciar o jogo (lançar a bola).
+- **Seta para a Esquerda**: Ativar o flipper esquerdo.
+- **Seta para a Direita**: Ativar o flipper direito.
 
-For WebAssembly:
+## Estrutura do Código
 
-*   [Emscripten](https://emscripten.org/).
-*   A browser with support for WebGL 2.0.
+### Arquivos Principais
 
-For building desktop applications:
+- **window.cpp**: Contém a maior parte da lógica do jogo, incluindo a renderização da bola, flippers, obstáculos e detecção de colisões.
+- **Shaders**: Os shaders são usados para transformar e colorir os objetos (bola, flippers, obstáculos) na tela.
 
-*   [SDL](https://www.libsdl.org/) 2.0.
-*   [SDL\_image](https://www.libsdl.org/projects/SDL_image/) 2.0.
-*   [GLEW](http://glew.sourceforge.net/) 2.2.0 (required for OpenGL-based applications).
-*   [Vulkan](https://www.lunarg.com/vulkan-sdk/) 1.3 (required for Vulkan-based applications).
+### Funções Importantes
 
-Desktop dependencies can be resolved automatically with [Conan](https://conan.io/), but it is disabled by default. To use Conan, install Conan 1.47 or a later 1.\* version (ABCg is not compatible with Conan 2.0!) and then configure CMake with `-DENABLE_CONAN=ON`.
+- **onCreate()**: Inicializa a janela e configura os shaders, a posição dos obstáculos e a configuração inicial do jogo.
+- **onUpdate()**: Atualiza a posição da bola com base no tempo (deltaTime) e verifica colisões.
+- **onEvent()**: Processa eventos de teclado, como pressionar as teclas de controle do flipper e iniciar o jogo.
+- **onPaint()**: Realiza o desenho dos objetos na tela, incluindo a bola, flippers e obstáculos.
+- **checkCollisions()**: Verifica colisões entre a bola e os flippers, paredes e obstáculos.
 
-The default renderer backend is OpenGL (CMake option `GRAPHICS_API=OpenGL`). To use the Vulkan backend, configure CMake with `-DGRAPHICS_API=Vulkan`.
+### Detalhes da Lógica
 
-***
+- **Obstáculos**: São gerados aleatoriamente, mas sempre afastados das paredes para evitar que fiquem fora da área visível. Eles são desenhados como círculos brancos.
+- **Flippers**: São representados por dois objetos, um à esquerda e outro à direita. Eles têm uma rotação controlada pelas teclas de seta.
+- **Bola**: A bola se move de acordo com a velocidade e direção, sendo afetada por colisões com obstáculos e flippers.
 
-## Installation and usage
+## Como Compilar e Executar
 
-Start by cloning the repository:
+1. **Instalar Dependências**:
 
-    # Get abcg repo
-    git clone https://github.com/hbatagelo/abcg.git
+   - OpenGL
+   - GLSL
+   - GLM
+   - SDL2
 
-    # Enter the directory
-    cd abcg
+2. **Compilação**:
+   Compile o código utilizando um compilador C++ com suporte ao OpenGL, GLM e SDL2.
 
-Follow the instructions below to build the "Hello, World!" sample located in `abcg/examples/helloworld`.
-
-### Windows
-
-*   Run `build-vs.bat` for building with the Visual Studio 2022 toolchain.
-*   Run `build.bat` for building with GCC (MinGW-w64).
-
-`build-vs.bat` and `build.bat` accept two optional arguments: (1) the build type, which is `Release` by default, and (2) an extra CMake option. For example, for a `Debug` build with `-DENABLE_CONAN=ON` using VS 2022, run
-
-    build-vs.bat Debug -DENABLE_CONAN=ON
-
-### Linux and macOS
-
-Run `./build.sh`.
-
-The script accepts two optional arguments: (1) the build type, which is `Release` by default, and (2) an extra CMake option. For example, for a `Debug` build with `-DENABLE_CONAN=ON`, run
-
-    ./build.sh Debug -DENABLE_CONAN=ON
-
-### WebAssembly
-
-1.  Run `build-wasm.bat` (Windows) or `./build-wasm.sh` (Linux/macOS).
-2.  Run `runweb.bat` (Windows) or `./runweb.sh` (Linux/macOS) for setting up a local web server.
-3.  Open <http://localhost:8080/helloworld.html>.
-
-***
-
-## Docker setup
-
-ABCg can be built in a [Docker](https://www.docker.com/) container. The Dockerfile provided is based on Ubuntu 22.04 and includes Emscripten.
-
-1.  Create the Docker image (`abcg`):
-
-        sudo docker build -t abcg .
-
-2.  Create the container (`abcg_container`):
-
-        sudo docker create -it \
-          -p 8080:8080 \
-          -v /tmp/.X11-unix:/tmp/.X11-unix:rw \
-          -e DISPLAY \
-          --name abcg_container abcg
-
-3.  Start the container:
-
-        sudo docker start -ai abcg_container
-
-    On NVIDIA GPUs, install the [NVIDIA Container Toolkit](https://github.com/NVIDIA/nvidia-docker) to allow the container to use the host's NVIDIA driver and X server. Expose the X server with `sudo xhost +local:root` before starting the container.
-
-***
-
-## License
-
-ABCg is licensed under the MIT License. See [LICENSE](https://github.com/hbatagelo/abcg/blob/main/LICENSE) for more information.
+3. **Execução**:
+   Após a compilação, execute o arquivo gerado. O jogo será iniciado e você poderá interagir com ele usando as teclas definidas.
